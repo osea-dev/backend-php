@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login Page</title>
+  <!-- Include Tailwind CSS from CDN -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+</head>
+
+<body class="bg-gray-100 flex justify-center items-center min-h-screen">
+  <div class="bg-white shadow-md rounded-lg p-8 max-w-md w-full">
+    <h1 class="text-2xl font-bold text-center mb-6">Login</h1>
+    <form id="loginForm" class="space-y-4">
+      <div>
+        <label for="username" class="block text-gray-700">Username</label>
+        <input
+          type="text"
+          id="username"
+          name="username"
+          class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          required
+        />
+      </div>
+      <div>
+        <label for="password" class="block text-gray-700">Password</label>
+        <input
+          type="password"
+          id="password"
+          name="password"
+          class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          required
+        />
+      </div>
+      <!-- Hidden database field with default value -->
+      <div>
+        <input
+          type="hidden"
+          id="database"
+          name="database"
+          value="phope"
+        />
+      </div>
+      <button
+        type="submit"
+        class="bg-blue-600 text-white font-bold py-2 px-4 w-full rounded hover:bg-blue-700"
+      >
+        Login
+      </button>
+    </form>
+    <div id="loadingMessage" class="mt-4 hidden text-blue-500 text-center">Loading...</div>
+    <div id="responseMessage" class="mt-4 text-center"></div>
+  </div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const form = document.getElementById("loginForm");
+      const loadingMessage = document.getElementById("loadingMessage");
+      const responseMessage = document.getElementById("responseMessage");
+
+      form.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        loadingMessage.classList.remove("hidden");
+        responseMessage.textContent = '';
+
+        // Gather form data
+        const formData = {
+          username: form.username.value,
+          password: form.password.value,
+          database: form.database.value, // Hidden field value will be passed
+        };
+
+        try {
+          const response = await fetch('http://phihope.com/api/login.php', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(formData),
+          });
+
+          const result = await response.json();
+          loadingMessage.classList.add("hidden");
+
+          if (result.isloggedIn) {
+            responseMessage.textContent = 'Login successful!';
+            responseMessage.classList.remove('text-red-500');
+            responseMessage.classList.add('text-green-500');
+          } else {
+            responseMessage.textContent = result.loginStatus || 'Login failed.';
+            responseMessage.classList.remove('text-green-500');
+            responseMessage.classList.add('text-red-500');
+          }
+        } catch (error) {
+          loadingMessage.classList.add("hidden");
+          responseMessage.textContent = 'An error occurred. Please try again.';
+          responseMessage.classList.remove('text-green-500');
+          responseMessage.classList.add('text-red-500');
+        }
+      });
+    });
+  </script>
+</body>
+</html>
