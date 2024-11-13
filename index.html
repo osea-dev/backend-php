@@ -86,6 +86,11 @@
             responseMessage.textContent = 'Login successful!';
             responseMessage.classList.remove('text-red-500');
             responseMessage.classList.add('text-green-500');
+
+            // Redirect to the dashboard after a brief delay
+            setTimeout(() => {
+              window.location.href = '/dashboard'; // Replace '/dashboard' with the path to your dashboard
+            }, 500);
           } else {
             responseMessage.textContent = result.loginStatus || 'Login failed.';
             responseMessage.classList.remove('text-green-500');
